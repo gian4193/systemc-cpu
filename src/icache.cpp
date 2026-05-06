@@ -69,7 +69,7 @@ void ICacheStage::run() {
             out_valid.write(false);
             continue;
         }
-
+        
         // ============================================
         //  TODO: 三段式 + cache lookup
         //
