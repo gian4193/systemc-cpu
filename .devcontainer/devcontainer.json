@@ -1,5 +1,10 @@
 {
     "name": "SystemC Dev",
     "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04",
-    "postCreateCommand": "sudo apt update && sudo apt install -y libsystemc-dev gtkwave"
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        }
+    },
+    "postCreateCommand": "sudo apt update && sudo apt install -y libsystemc-dev gtkwave && npm install -g @anthropic-ai/claude-code"
 }
