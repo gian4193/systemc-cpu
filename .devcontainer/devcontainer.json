@@ -1,0 +1,5 @@
+{
+    "name": "SystemC Dev",
+    "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04",
+    "postCreateCommand": "sudo apt update && sudo apt install -y libsystemc-dev gtkwave"
+}
