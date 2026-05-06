@@ -1,4 +1,3 @@
-cat > Makefile << 'EOF'
 # ===== 使用方式 =====
 # make tests               # 編譯所有測試
 # ./build/test_icache_hit  # 跑特定測試
@@ -40,4 +39,3 @@ clean:
 # 執行特定 test 的方便指令
 run-%: build/test_%
 	./build/test_$*
-EOF

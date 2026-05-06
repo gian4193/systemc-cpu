@@ -57,6 +57,7 @@ void ICache::prefill_inst(uint32_t pc, uint32_t inst) {
 void ICacheStage::run() {
     bool full = false;
     IfId stored;
+    uint32_t pc ;
 
     in_ready.write(true);
     out_valid.write(false);
@@ -69,7 +70,7 @@ void ICacheStage::run() {
             out_valid.write(false);
             continue;
         }
-        
+
         // ============================================
         //  TODO: 三段式 + cache lookup
         //
@@ -93,6 +94,27 @@ void ICacheStage::run() {
         //   if (full) out_data.write(stored);
         //   in_ready.write(!full);
         // ============================================
+        bool got_in  = in_valid.read() && in_ready.read();
+        bool put_out = out_valid.read() && out_ready.read();
 
+        if(put_out) full = false;
+        if(got_in){
+            full = true;
+            pc = in_pc.read();
+        }
+        bool lookup_cache = false;
+        if(full){
+            uint32_t inst;
+            lookup_cache= g_icache.lookup(pc, inst);
+            if(lookup_cache){
+                IfId p; p.pc = pc; p.inst = inst;
+                stored=p;
+            }
+        }
+        
+
+        out_valid.write(lookup_cache);
+        if(lookup_cache) out_data.write(stored);
+        in_ready.write(!full);
     }
 }
