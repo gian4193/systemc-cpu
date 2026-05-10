@@ -55,6 +55,7 @@ extern PHT g_pht;
 SC_MODULE(BranchPredictor) {
     sc_in<bool> clk;
     sc_in<bool> reset;
+    sc_in<bool> redirect_valid;   // ← 新增
 
     // Lookup interface
     sc_in<uint32_t>   in_pc;

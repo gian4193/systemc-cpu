@@ -100,6 +100,7 @@ SC_MODULE(UpdateInjector) {
 int sc_main(int argc, char* argv[]) {
     sc_clock clk("clk", 10, SC_NS);
     sc_signal<bool>     reset_sig;
+    sc_signal<bool>     redirect_valid_sig;   // tied false (Lesson 11 port)
     sc_signal<uint32_t> pc_sig;
     sc_signal<bool>     pc_valid, pc_ready;
     sc_signal<BPLookup> lookup_data;
@@ -113,6 +114,7 @@ int sc_main(int argc, char* argv[]) {
 
     BranchPredictor bp("bp");
     bp.clk(clk); bp.reset(reset_sig);
+    bp.redirect_valid(redirect_valid_sig);
     bp.in_pc(pc_sig); bp.in_valid(pc_valid); bp.in_ready(pc_ready);
     bp.out_data(lookup_data); bp.out_valid(lookup_valid); bp.out_ready(lookup_ready);
     bp.upd_data(upd_data); bp.upd_valid(upd_valid);

@@ -98,6 +98,28 @@ void ICacheStage::run() {
             continue;
         }
 
+        // ★ NEW: redirect 處理
+        // ============================================
+        // TODO: 看到 redirect_valid 就 squash
+        //
+        // 思路: 跟 reset 類似但「比較溫和」 — pc state 不關我事
+        //
+        // if (redirect_valid.read()) {
+        //     state = IDLE;
+        //     full = false;
+        //     req_sent = false;
+        //     in_ready.write(true);
+        //     out_valid.write(false);
+        //     mem_req_valid.write(false);
+        //     mem_resp_ready.write(true);   // 仍然準備好收 stale response
+        //     continue;
+        // }
+        //
+        // 注意 ★: mem_resp_ready 設 true 而非 false!
+        //   因為先前發出的 mem_req 結果還在路上, 要收進來丟掉
+        //   (不收會卡住 MainMem)
+        // ============================================
+
         // === Phase 1: 觀察所有 handshake ===
         bool got_in   = in_valid.read()       && in_ready.read();
         bool put_out  = out_valid.read()      && out_ready.read();

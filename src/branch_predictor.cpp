@@ -83,6 +83,20 @@ void BranchPredictor::run() {
             continue;
         }
 
+        // ★ NEW: redirect 處理
+        // ============================================
+        // TODO:
+        // if (redirect_valid.read()) {
+        //     full = false;            // 丟掉 stored prediction
+        //     in_ready.write(true);
+        //     out_valid.write(false);
+        //     continue;
+        // }
+        //
+        // 注意: BTB / PHT 內部資料 不要清!
+        //   它們是「學到的」狀態, redirect 不該影響
+        // ============================================
+
         // === Phase 1: handshake ===
         bool got_in  = in_valid.read()  && in_ready.read();
         bool put_out = out_valid.read() && out_ready.read();

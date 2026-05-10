@@ -101,3 +101,10 @@ inline void sc_trace(sc_trace_file* tf, const BPUpdate& u, const std::string& na
     sc_trace(tf, u.taken, name + ".taken");
     sc_trace(tf, u.target, name + ".target");
 }
+
+// =======================================
+// Redirect signal bundle (from backend)
+// 不是 packet，但放這方便引用
+// =======================================
+// redirect_valid + redirect_pc 走兩個獨立 signal
+// 沒包成 struct (因為它們語意不同：valid 廣播 squash, pc 只給 PCGen)

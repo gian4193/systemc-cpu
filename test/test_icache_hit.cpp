@@ -55,6 +55,7 @@ int sc_main(int argc, char* argv[]) {
 
     sc_clock clk("clk", 10, SC_NS);
     sc_signal<bool> reset_sig;
+    sc_signal<bool> redirect_valid_sig;   // tied false (Lesson 11 port)
     sc_signal<uint32_t> pc_sig;
     sc_signal<bool> pc_valid, pc_ready;
     sc_signal<IfId> if_data;
@@ -66,6 +67,7 @@ int sc_main(int argc, char* argv[]) {
 
     ICacheStage icache("icache");
     icache.clk(clk); icache.reset(reset_sig);
+    icache.redirect_valid(redirect_valid_sig);
     icache.in_pc(pc_sig); icache.in_valid(pc_valid); icache.in_ready(pc_ready);
     icache.out_data(if_data); icache.out_valid(if_valid); icache.out_ready(if_ready);
 

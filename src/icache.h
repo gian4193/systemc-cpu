@@ -41,6 +41,7 @@ inline uint32_t line_aligned_pc(uint32_t pc) { return pc & ~0x3F; }   // ★ 新
 SC_MODULE(ICacheStage) {
     sc_in<bool>     clk;
     sc_in<bool>     reset;
+    sc_in<bool>     redirect_valid;   // ← 新增
 
     // upstream (PC in)
     sc_in<uint32_t> in_pc;
