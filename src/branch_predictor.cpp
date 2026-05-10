@@ -126,6 +126,6 @@ void BranchPredictor::run() {
         // === Phase 3: drive output ===
         out_valid.write(full);
         if (full) out_data.write(stored);
-        in_ready.write(!full);
+        in_ready.write(!full || out_ready.read());
     }
 }

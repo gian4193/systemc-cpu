@@ -15,7 +15,14 @@ void PCGen::run() {
             continue;
         }
 
-        bool both_consumed = icache_ready.read() && bp_ready.read();
+        bp_pred_ready.write(false);
+        out_valid.write(false);
+
+        // out_valid.read() 讀「上一拍我寫了什麼」, 必須加進來:
+        //   reset 完第一拍 out_valid 還是 0 (init/reset 寫的),
+        //   沒它就會誤判成 "都 ready 了→ 上一拍 pc 已被收"
+        //   結果 PCGen 在 cycle 1 直接 pc 0→4, pc=0 永遠 fetch 不到
+        bool both_consumed = out_valid.read() && icache_ready.read() && bp_ready.read();
         bool got_pred      = bp_pred_valid.read() && bp_pred_ready.read();
         // ──────────────────────────────────────────────────────────────
         // ★ stall 期間 got_pred 會 toggle 0/1
@@ -39,9 +46,22 @@ void PCGen::run() {
         }
         else if(both_consumed){
             if(got_pred){
-                
+                BPLookup bp = bp_pred_data.read();
+                if(bp.btb_hit && bp.predict_taken){
+                    pc = bp.target;
+                }
+                else{
+                    pc = pc + 4;   // ★ btb miss / not-taken → fallthrough
+                }
+            }
+            else{
+                pc = pc + 4;
             }
         }
+
+        bp_pred_ready.write(true);
+        out_valid.write(true);
+        out_pc.write(pc);
 
 
         // ============================================
