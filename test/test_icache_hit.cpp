@@ -1,5 +1,6 @@
 #include <systemc.h>
 #include "icache.h"
+#include "main_mem.h"
 #include "packets.h"
 
 // =======================================
@@ -61,6 +62,12 @@ int sc_main(int argc, char* argv[]) {
     sc_signal<IfId> if_data;
     sc_signal<bool> if_valid, if_ready;
 
+    // ICache <-> MainMem (cache 已預填, 不會 miss, 但 port 還是要綁)
+    sc_signal<LineRequest>  mem_req;
+    sc_signal<bool>         mem_req_valid, mem_req_ready;
+    sc_signal<LineResponse> mem_resp;
+    sc_signal<bool>         mem_resp_valid, mem_resp_ready;
+
     PCGenStub pcgen("pcgen");
     pcgen.clk(clk); pcgen.reset(reset_sig);
     pcgen.out_pc(pc_sig); pcgen.out_valid(pc_valid); pcgen.out_ready(pc_ready);
@@ -70,6 +77,13 @@ int sc_main(int argc, char* argv[]) {
     icache.redirect_valid(redirect_valid_sig);
     icache.in_pc(pc_sig); icache.in_valid(pc_valid); icache.in_ready(pc_ready);
     icache.out_data(if_data); icache.out_valid(if_valid); icache.out_ready(if_ready);
+    icache.mem_req_data(mem_req); icache.mem_req_valid(mem_req_valid); icache.mem_req_ready(mem_req_ready);
+    icache.mem_resp_data(mem_resp); icache.mem_resp_valid(mem_resp_valid); icache.mem_resp_ready(mem_resp_ready);
+
+    MainMem mem("mem");
+    mem.clk(clk); mem.reset(reset_sig);
+    mem.req_data(mem_req); mem.req_valid(mem_req_valid); mem.req_ready(mem_req_ready);
+    mem.resp_data(mem_resp); mem.resp_valid(mem_resp_valid); mem.resp_ready(mem_resp_ready);
 
     DecoderStub decode("decode");
     decode.clk(clk); decode.reset(reset_sig);

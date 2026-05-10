@@ -98,6 +98,18 @@ void ICacheStage::run() {
             continue;
         }
 
+        if(redirect_valid.read()){
+            state = IDLE;
+            full = false;
+            req_sent = false;
+            in_ready.write(true);
+            out_valid.write(false);
+            mem_req_valid.write(false);
+            mem_resp_ready.write(true);
+            continue;
+
+        }
+
         // ★ NEW: redirect 處理
         // ============================================
         // TODO: 看到 redirect_valid 就 squash
@@ -162,7 +174,7 @@ void ICacheStage::run() {
         // === Phase 3: drive output ===
         out_valid.write(full);
         if (full) out_data.write(stored);
-        in_ready.write(state == IDLE && !full);
+        in_ready.write((state == IDLE && !full)  || (full && out_ready.read()));
 
         // 對 MainMem
         bool need_req = (state == MISS_PENDING) && !req_sent;

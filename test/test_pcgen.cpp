@@ -10,6 +10,7 @@
 // =======================================
 SC_MODULE(IfIdSink) {
     sc_in<bool> clk; sc_in<bool> reset;
+    sc_in<bool> redirect_valid;   // ★ 下游也得認 redirect, 不然會有 1-cycle leak
     sc_in<IfId>  in_data;
     sc_in<bool>  in_valid;
     sc_out<bool> in_ready;
@@ -21,7 +22,7 @@ SC_MODULE(IfIdSink) {
             wait();
             if (reset.read()) { in_ready.write(true); continue; }
             in_ready.write(true);
-            if (in_valid.read() && in_ready.read()) {
+            if (in_valid.read() && in_ready.read() && !redirect_valid.read()) {
                 IfId p = in_data.read();
                 std::cout << "[" << sc_time_stamp() << "] FETCH: " << p << std::endl;
             }
@@ -168,6 +169,7 @@ int sc_main(int argc, char* argv[]) {
 
     IfIdSink fetch_sink("fetch_sink");
     fetch_sink.clk(clk); fetch_sink.reset(reset_sig);
+    fetch_sink.redirect_valid(redirect_valid);
     fetch_sink.in_data(ifid_data); fetch_sink.in_valid(ifid_valid); fetch_sink.in_ready(ifid_ready);
 
     BPSink bp_sink("bp_sink");
